@@ -13,14 +13,14 @@ removeFolder() {
 }
 
 result() {
-	filePathSource=$1 #
-    folderName=$2
-	filePath=($@)
+	quantityTest=$1 #
+    filePathSource=$2
+    folderNameResult=$3
     namePath=`echo "$filePathSource" | cut -d '.' -f 1`
     javac $filePathSource # compile file java
-	for ((i = 2; i < $#; i++))
+    for ((i = 1; i <= quantityTest; i++))
 	do
-        java $namePath < ${filePath[$i]} > result/java/$folderName/resultCase$((i - 1)).out
+        java $namePath < input/java/$folderNameResult/case$i.inp > result/java/$folderName/resultCase$i.out
 	done
 }
 
@@ -56,9 +56,9 @@ output() {
     namePath=`echo "$filePathSubmit" | cut -d '.' -f 1`
     javac $filePathSubmit # compile file java 
 	
-    for ((i = 2; i < $#; i++))
+    for ((i = 3; i <= $#; i++))
 	do
-		java $namePath < ${filePath[$i]} > output/java/$folderName/case$((i - 1)).out
+		java $namePath < ${filePath[$((i - 1))]} > output/java/$folderName/case$((i - 2)).out
 	done
 } 
 
@@ -102,7 +102,7 @@ outSubmit() {
 			echo "Case $i: WA"
 		fi
 	done
-	echo "result: $count/$quantityTest, score: $((count/quantityTest*100))"
+	echo "result: $count/$quantityTest, score: $((100*count/quantityTest))"
 }
 
 submit() {
@@ -112,12 +112,13 @@ submit() {
     folderNameOutput=$4
 
 	arr[0]=$fileSubmit
-
-	for ((i = 1; i <= $1; i++))
+    arr[1]=$folderResult
+    
+	for ((i = 2; i <= $1 + 1; i++))
 	do
-		arr[$i]=input/java/$folderName/case$i.inp
+		arr[$i]=input/java/$folderNameResult/case$((i - 1)).inp
 	done
-	output ${arr[@]} $folderNameOutput
+	output ${arr[@]}
 	outSubmit $quantityTest $folderNameResult $folderNameOutput
 }
 
@@ -188,6 +189,7 @@ main() {
     case $action
     in
         1)
+            mkdir output/java/$5
             sub $2 $3 $4 $5
             removeFolder $5
             ;;

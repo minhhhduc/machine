@@ -3,7 +3,7 @@
 newFolder() {
     folderName=$1
     mkdir output/shellscript/$folderName
-    mkdir result/shellscript/$folderName
+    # mkdir result/shellscript/$folderName
 }
 
 removeFolder() {
@@ -14,13 +14,14 @@ removeFolder() {
 
 
 result() {
-	filePathSource=$1 #
-    folderName=$2
-	filePath=($@)
+	quantityTest=$1
+	filePathSource=$2
+    folderNameResult=$3
+    folderNameOutput=$4
 
-	for ((i = 2; i < $#; i++))
+	for ((i = 1; i <= quantityTest; i++))
 	do
-		bash $filePathSource < ${filePath[$i]} > result/shellscript/$folderName/resultCase$((i - 1)).out
+		bash $filePathSource < input/shellscript/$folderNameResult/case$i.inp > result/shellscript/$folderName/resultCase$((i - 1)).out
 	done
 }
 
@@ -91,7 +92,7 @@ outSubmit() {
 			echo "Case $i: WA"
 		fi
 	done
-	echo "result: $count/$quantityTest, score: $((count/quantityTest*100))"
+	echo "result: $count/$quantityTest, score: $((100*count/quantityTest))"
 }
 
 submit() {
@@ -101,12 +102,13 @@ submit() {
     folderNameOutput=$4
 
 	arr[0]=$fileSubmit
+    arr[1]=$folderNameResult
 
-	for ((i = 1; i <= $1; i++))
+	for ((i = 2; i <= $1 + 1; i++))
 	do
-		arr[$i]=input/shellscript/$folderName/case$i.inp
+		arr[$i]=input/shellscript/$folderNameResult/case$i.inp
 	done
-	output ${arr[@]} $folderNameOutput
+	output ${arr[@]}
 	outSubmit $quantityTest $folderNameResult $folderNameOutput
 }
 
@@ -178,11 +180,12 @@ main() {
     case $action
     in
         1)
+            mkdir output/shellscript/$folderName
             sub $2 $3 $4 $5
             removeFolder $folderName
             ;;
         2)
-            # newFolder $folderName
+            newFolder $folderName
             res $2 $3 $4 $5
             ;;
 

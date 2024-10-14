@@ -13,14 +13,15 @@ removeFolder() {
 }
 
 result() {
-	filePathSource=$1 #
-    folderName=$2
-	filePath=($@)
+	quantityTest=$1 
+    filePathSource=$2
+    folderNameResult=$3
     namePath=`echo "$filePathSource" | cut -d '.' -f 1`
     gcc $filePathSource -o $namePath # compile file c
-	for ((i = 2; i < $#; i++))
+
+	for ((i = 1; i <= quantityTest; i++))
 	do
-        ./$namePath < ${filePath[$i]} > result/c-cpp/c/$folderName/resultCase$((i - 1)).out
+        ./$namePath < input/c-cpp/c/$folderNameResult/case$i.inp > result/c-cpp/c/$folderName/resultCase$i.out
 	done
 }
 
@@ -55,9 +56,9 @@ output() {
     namePath=`echo "$filePathSubmit" | cut -d '.' -f 1`
     gcc $filePathSubmit -o $namePath # compile file c 
 	
-    for ((i = 2; i < $#; i++))
+    for ((i = 3; i <= $#; i++))
 	do
-		./$namePath < ${filePath[$i]} > output/c-cpp/c/$folderName/case$((i - 1)).out
+		./$namePath < ${filePath[$((i - 1))]} > output/c-cpp/c/$folderName/case$((i - 2)).out
 	done
 } 
 
@@ -101,7 +102,7 @@ outSubmit() {
 			echo "Case $i: WA"
 		fi
 	done
-	echo "result: $count/$quantityTest, score: $((count/quantityTest*100))"
+	echo "result: $count/$quantityTest, score: $((100*count/quantityTest))"
 }
 
 submit() {
@@ -111,12 +112,13 @@ submit() {
     folderNameOutput=$4
 
 	arr[0]=$fileSubmit
-
-	for ((i = 1; i <= $1; i++))
+    arr[1]=$folderNameResult
+    
+	for ((i = 2; i <= $1 + 1; i++))
 	do
-		arr[$i]=input/c-cpp/c/$folderName/case$i.inp
+		arr[$i]=input/c-cpp/c/$folderNameResult/case$((i - 1)).inp
 	done
-	output ${arr[@]} $folderNameOutput
+	output ${arr[@]}
 	outSubmit $quantityTest $folderNameResult $folderNameOutput
 }
 
@@ -187,6 +189,7 @@ main() {
     case $action
     in
         1)
+            mkdir output/c-cpp/c/$5
             sub $2 $3 $4 $5
             removeFolder $5
             ;;

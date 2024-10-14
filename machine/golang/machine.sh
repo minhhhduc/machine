@@ -14,13 +14,14 @@ removeFolder() {
 
 
 result() {
-	filePathSource=$1 #
-    folderName=$2
-	filePath=($@)
+	quantityTest=$1
+	filePathSource=$2
+    folderNameResult=$3
+    folderNameOutput=$4
 
-	for ((i = 2; i < $#; i++))
+	for ((i = 1; i <= quantityTest; i++))
 	do
-		go run $filePathSource < ${filePath[$i]} > result/golang/$folderName/resultCase$((i - 1)).out
+		go run $filePathSource < input/golang/$folderNameResult/case$i.inp > result/golang/$folderName/resultCase$((i - 1)).out
 	done
 }
 
@@ -39,7 +40,7 @@ output() {
     folderName=$2
 	filePath=($@)
 	
-	for ((i = 2; i < $#; i++))
+	for ((i = 2; i <= $#; i++))
 	do
 		go run $filePathSubmit < ${filePath[$i]} > output/golang/$folderName/case$((i - 1)).out
 	done
@@ -71,7 +72,7 @@ outSubmit() {
 			echo "Case $i: WA"
 		fi
 	done
-	echo "result: $count/$quantityTest, score: $((count/quantityTest*100))"
+	echo "result: $count/$quantityTest, score: $((100*count/quantityTest))"
 }
 
 submit() {
@@ -81,12 +82,13 @@ submit() {
     folderNameOutput=$4
 
 	arr[0]=$fileSubmit
+    arr[1]=$folderResult
 
-	for ((i = 1; i <= $1; i++))
+	for ((i = 2; i <= $1 + 1; i++))
 	do
-		arr[$i]=input/golang/$folderName/case$i.inp
+		arr[$i]=input/golang/$folderNameResult/case$((i - 1)).inp
 	done
-	output ${arr[@]} $folderNameOutput
+	output ${arr[@]}
 	outSubmit $quantityTest $folderNameResult $folderNameOutput
 }
 
@@ -142,10 +144,12 @@ main() {
     case $action
     in
         1)
+            mkdir output/golang/$folderName
             sub $2 $3 $4 $5
-            newFolder $folderName
+            removeFolder $folderName
             ;;
         2)
+            newFolder $folderName
             res $2 $3 $4 $5
             ;;
     esac

@@ -13,14 +13,15 @@ removeFolder() {
 }
 
 result() {
-	filePathSource=$1 #
-    folderName=$2
-	filePath=($@)
+	quantityTest=$1 
+    filePathSource=$2
+    folderNameResult=$3
     namePath=`echo "$filePathSource" | cut -d '.' -f 1`
     g++ $filePathSource -o $namePath # compile file c
-	for ((i = 2; i < $#; i++))
+
+	for ((i = 1; i <= quantityTest; i++))
 	do
-        ./$namePath < ${filePath[$i]} > result/c-cpp/cpp/$folderName/resultCase$((i - 1)).out
+        ./$namePath < input/c-cpp/cpp/$folderNameResult/case$i.inp > result/c-cpp/cpp/$folderName/resultCase$i.out
 	done
 }
 
@@ -32,7 +33,7 @@ resultNoInput() {
 	./$namePath > result/c-cpp/cpp/$folderName/resultCase1.out
 }
 
-resultByCommandLineArgrument() {
+resultBycommandLineArgrument() {
     filePathSource=$1 #
     folderName=$2
     namePath=`echo "$filePathSource" | cut -d '.' -f 1`
@@ -44,7 +45,6 @@ resultByCommandLineArgrument() {
     done < $filePath
 }
 
-
 # resultInputByFile() {
 #     echo ""
 # }
@@ -54,11 +54,11 @@ output() {
     folderName=$2
 	filePath=($@)
     namePath=`echo "$filePathSubmit" | cut -d '.' -f 1`
-    g++ $filePathSubmit -o $namePath # compile file c++ 
+    g++ $filePathSubmit -o $namePath # compile file c 
 	
-    for ((i = 2; i < $#; i++))
+    for ((i = 3; i <= $#; i++))
 	do
-		./$namePath < ${filePath[$i]} > output/c-cpp/cpp/$folderName/case$((i - 1)).out
+		./$namePath < ${filePath[$((i - 1))]} > output/c-cpp/cpp/$folderName/case$((i - 2)).out
 	done
 } 
 
@@ -70,7 +70,7 @@ outputNoInput() {
     ./$namePath > output/c-cpp/cpp/$folderName/case1.out
 }
 
-outputByCommandLineArgrument() {
+outputBycommandLineArgrument() {
     filePathSubmit=$1 #~/Desktop/submit/python/main.py
     folderName=$2
     namePath=`echo "$filePathSubmit" | cut -d '.' -f 1`
@@ -102,7 +102,7 @@ outSubmit() {
 			echo "Case $i: WA"
 		fi
 	done
-	echo "result: $count/$quantityTest, score: $((count/quantityTest*100))"
+	echo "result: $count/$quantityTest, score: $((100*count/quantityTest))"
 }
 
 submit() {
@@ -112,12 +112,13 @@ submit() {
     folderNameOutput=$4
 
 	arr[0]=$fileSubmit
-
-	for ((i = 1; i <= $1; i++))
+    arr[1]=$folderNameResult
+    
+	for ((i = 2; i <= $1 + 1; i++))
 	do
-		arr[$i]=input/c-cpp/cpp/$folderName/case$i.inp
+		arr[$i]=input/c-cpp/cpp/$folderNameResult/case$((i - 1)).inp
 	done
-	output ${arr[@]} $folderNameOutput
+	output ${arr[@]}
 	outSubmit $quantityTest $folderNameResult $folderNameOutput
 }
 
@@ -130,13 +131,13 @@ submitNoInput() {
 	outSubmit 1 $folderNameResult $folderNameOutput
 }
 
-submitByCommandLineArgrument() {
+submitBycommandLineArgrument() {
     quantityTest=$1
     fileSubmit=$2
     folderNameResult=$3
     folderNameOutput=$folderNameResult
     filePath=$4
-    outputByCommandLineArgrument $fileSubmit $folderNameOutput $filePath
+    outputBycommandLineArgrument $fileSubmit $folderNameOutput $filePath
     outSubmit 1 $folderNameResult $folderNameOutput
 }
 
@@ -155,8 +156,8 @@ sub() {
         2)
             submit $quantityTest $filePath $folderResult $folderOut
             ;;
-        3)
-            submitByCommandLineArgrument $quantityTest $filePath $folderResult input/c-cpp/cpp/$folderResult/case1.inp
+         3)
+            submitBycommandLineArgrument $quantityTest $filePath $folderResult input/c-cpp/cpp/$folderResult/case1.inp
             ;;
     esac    
 }
@@ -177,7 +178,7 @@ res() {
             result $quantityTest $filePath $folderResult $folderOut
             ;;
         3)
-            resultByCommandLineArgrument $filePath $folderResult input/c-cpp/cpp/$folderResult/case1.inp
+            resultBycommandLineArgrument $filePath $folderResult input/c-cpp/cpp/$folderResult/case1.inp
             ;;
     esac   
 }
@@ -188,6 +189,7 @@ main() {
     case $action
     in
         1)
+            mkdir output/c-cpp/cpp/$5
             sub $2 $3 $4 $5
             removeFolder $5
             ;;

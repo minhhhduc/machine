@@ -14,13 +14,14 @@ removeFolder() {
 
 
 result() {
-	filePathSource=$1 #
-    folderName=$2
-	filePath=($@)
+	quantityTest=$1
+	filePathSource=$2
+    folderNameResult=$3
+    folderNameOutput=$4
 
-	for ((i = 2; i < $#; i++))
+	for ((i = 1; i <= quantityTest; i++))
 	do
-		python $filePathSource < ${filePath[$i]} > result/python/$folderName/resultCase$((i - 1)).out
+		python $filePathSource < input/python/$folderNameResult/case$i.inp > result/python/$folderNameOutput/resultCase$i.out
 	done
 }
 
@@ -48,10 +49,11 @@ output() {
 	filePathSubmit=$1 #~/Desktop/submit/python/main.py
     folderName=$2
 	filePath=($@)
-	
-	for ((i = 2; i < $#; i++))
+
+
+	for ((i = 3; i <= $#; i++))
 	do
-		python $filePathSubmit < ${filePath[$i]} > output/python/$folderName/case$((i - 1)).out
+		python $filePathSubmit < ${filePath[$((i - 1))]} > output/python/$folderName/case$((i - 2)).out
 	done
 } 
 
@@ -91,7 +93,7 @@ outSubmit() {
 			echo "Case $i: WA"
 		fi
 	done
-	echo "result: $count/$quantityTest, score: $((count/quantityTest*100))"
+	echo "result: $count/$quantityTest, score: $((100*count/quantityTest))"
 }
 
 submit() {
@@ -101,12 +103,13 @@ submit() {
     folderNameOutput=$4
 
 	arr[0]=$fileSubmit
+    arr[1]=$folderNameResult
 
-	for ((i = 1; i <= $1; i++))
+	for ((i = 2; i <= $1 + 1; i++))
 	do
-		arr[$i]=input/python/$folderName/case$i.inp
+		arr[$i]=input/python/$folderName/case$((i - 1)).inp
 	done
-	output ${arr[@]} $folderNameOutput
+	output ${arr[@]}
 	outSubmit $quantityTest $folderNameResult $folderNameOutput
 }
 
@@ -162,7 +165,7 @@ res() {
         1)
             resultNoInput $filePath $folderResult $folderOut
             ;;
-        2)
+        2) 
             result $quantityTest $filePath $folderResult $folderOut
             ;;
         3)
@@ -177,6 +180,8 @@ main() {
     case $action
     in
         1)
+            # newFolder $folderName
+            mkdir output/python/$folderName    
             sub $2 $3 $4 $5
             removeFolder $folderName
             ;;
